@@ -31,7 +31,7 @@ def save_user(username, password):
     with open(USER_DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(users, f, indent=4, ensure_ascii=False)
 
-# ------------------ HTML टेम्पलेट्स (इसी फाइल में) ------------------
+# ------------------ HTML टेम्पलेट्स ------------------
 
 LOGIN_HTML = '''
 <!DOCTYPE html>
@@ -128,13 +128,11 @@ INDEX_HTML = '''
             <button type="submit" class="btn-start" id="startBtn">स्टार्ट बटन (Convert to APK)</button>
         </form>
 
-        <!-- प्रोसेसिंग एरिया -->
         <div id="status-area">
             <div class="loader"></div>
             <p id="status-text" style="color: #555; font-weight: 500;">फाइल अपलोड हो रही है और कनवर्टर काम कर रहा है...</p>
         </div>
 
-        <!-- डाउनलोड एरिया -->
         <div class="download-box" id="downloadBox">
             <span style="font-size: 20px;">🎉</span>
             <p style="margin: 5px 0; color: #2e7d32; font-weight: bold;">आपका APK तैयार है!</p>
@@ -219,7 +217,7 @@ def login():
         if action == 'signup':
             if username in users:
                 error = "यह यूजरनेम पहले से मौजूद है!"
-            elif not username || not password:
+            elif not username or not password:
                 error = "कृपया सभी फील्ड भरें।"
             else:
                 save_user(username, password)
@@ -258,13 +256,13 @@ def convert():
         apk_name = filename.split('.')[0] + "_compiled.apk"
         apk_path = os.path.join(APK_FOLDER, apk_name)
         
-        # सुरक्षित और एरर-फ्री डमी APK फाइल बनाना
+        # सुरक्षित डमी APK फाइल बनाना
         with open(apk_path, 'w', encoding='utf-8') as f:
             f.write("S.KANHAIYA APK CONVERTER GENERATED BINARY DATA")
             
         return {"status": "success", "download_url": url_for('download_file', filename=apk_name)}
 
-@app.route('/dowtnload/<filename>')
+@app.route('/download/<filename>')
 def download_file(filename):
     return send_from_directory(APK_FOLDER, filename, as_attachment=True)
 
@@ -274,6 +272,4 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    # पोर्ट 5000 पर रन होगा
     app.run(debug=True, port=5000)
-      
